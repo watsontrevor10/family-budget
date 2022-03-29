@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "family-budget",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

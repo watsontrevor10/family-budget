@@ -1,0 +1,7 @@
+{
+  "name": "family-budget",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
