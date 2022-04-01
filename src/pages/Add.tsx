@@ -21,11 +21,16 @@ import { supabase } from "../supabaseClient"
 import "./Add.css"
 
 const Add: React.FC = () => {
+  const initialState = {
+    amount: "",
+    date: new Date().toISOString(),
+    category: "",
+    note: "",
+  }
+  const [transaction, setTransaction] = useState(initialState)
   const [showLoading, hideLoading] = useIonLoading()
   const [showToast] = useIonToast()
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString())
   const [categories, setCategories] = useState([])
-  const [category, setCategory] = useState("")
 
   useEffect(() => {
     getCategories()
@@ -55,6 +60,36 @@ const Add: React.FC = () => {
     }
   }
 
+  const submitTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    await showLoading()
+
+    try {
+      const { data, error } = await supabase.from("transactions").insert([
+        {
+          category: transaction.category,
+          amount: transaction.amount,
+          date: transaction.date,
+          notes: transaction.note,
+        },
+      ])
+
+      if (error) {
+        throw error
+      }
+
+      if (data) {
+        console.log(data)
+        setTransaction(initialState)
+        await hideLoading()
+        showToast({ message: "Transaction Added", duration: 2000 })
+      }
+    } catch (error: any) {
+      console.log(error)
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -64,46 +99,65 @@ const Add: React.FC = () => {
       </IonHeader>
       <IonContent>
         <IonList>
-          <IonItem>
-            <IonLabel position="fixed">Amount</IonLabel>
-            <IonInput
-              type="number"
-              placeholder="amount"
-              value="amount"
-              autofocus={true}
-            ></IonInput>
-          </IonItem>
+          <form onSubmit={submitTransaction}>
+            <IonItem>
+              <IonLabel position="fixed">Amount</IonLabel>
+              <IonInput
+                type="text"
+                inputMode="decimal"
+                required={true}
+                value={transaction.amount}
+                autofocus={true}
+                onIonChange={(e) =>
+                  setTransaction({ ...transaction, amount: e.detail.value! })
+                }
+              ></IonInput>
+            </IonItem>
 
-          <IonItem>
-            <IonLabel position="fixed">Category</IonLabel>
-            <IonSelect
-              value={category}
-              placeholder="Select One"
-              onIonChange={(e) => setCategory(e.detail.value)}
-            >
-              {categories.map((category) => (
-                <IonSelectOption value={category.name}>
-                  {category.name}
-                </IonSelectOption>
-              ))}
-            </IonSelect>
-          </IonItem>
+            <IonItem>
+              <IonLabel position="fixed">Category</IonLabel>
+              <IonSelect
+                value={transaction.category}
+                placeholder="Select One"
+                onIonChange={(e) =>
+                  setTransaction({ ...transaction, category: e.detail.value! })
+                }
+              >
+                {categories.map((category) => (
+                  <IonSelectOption value={category.name} key={category.id}>
+                    {category.name}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-          <IonItem>
-            <IonLabel position="fixed">Date</IonLabel>
-            <IonDatetime
-              presentation="date"
-              value={selectedDate}
-              onIonChange={(e) => setSelectedDate(e.detail.value!)}
-            ></IonDatetime>
-          </IonItem>
+            <IonItem>
+              <IonLabel position="fixed">Date</IonLabel>
+              <IonDatetime
+                presentation="date"
+                value={transaction.date}
+                onIonChange={(e) =>
+                  setTransaction({ ...transaction, date: e.detail.value! })
+                }
+              ></IonDatetime>
+            </IonItem>
 
-          <IonItem>
-            <IonLabel position="fixed">Notes</IonLabel>
-            <IonInput placeholder="notes" value="notes"></IonInput>
-          </IonItem>
+            <IonItem>
+              <IonLabel position="fixed">Notes</IonLabel>
+              <IonInput
+                placeholder="notes"
+                value={transaction.note}
+                onIonChange={(e) =>
+                  setTransaction({ ...transaction, note: e.detail.value! })
+                }
+                spellCheck={true}
+              ></IonInput>
+            </IonItem>
 
-          <IonButton>Submit</IonButton>
+            <IonButton type="submit" color="primary">
+              Submit
+            </IonButton>
+          </form>
         </IonList>
       </IonContent>
     </IonPage>
