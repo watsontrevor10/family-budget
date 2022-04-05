@@ -1,7 +1,4 @@
 import {
-  IonGrid,
-  IonRow,
-  IonCol,
   IonContent,
   IonPage,
   IonHeader,
@@ -9,6 +6,8 @@ import {
   IonToolbar,
   useIonLoading,
   useIonToast,
+  IonItem,
+  IonLabel,
 } from "@ionic/react"
 import "./Transactions.css"
 import React, { useEffect, useState } from "react"
@@ -54,24 +53,23 @@ const Transactions: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonContent>
-          <IonGrid>
-            <IonRow class="ion-justify-content-start">
-              <IonCol size="3">Category</IonCol>
-              <IonCol size="3">Amount</IonCol>
-              <IonCol size="3">Date</IonCol>
-              <IonCol size="3">Notes</IonCol>
-            </IonRow>
-            {transactions.map((transaction) => (
-              <IonRow class="ion-justify-content-start" key={transaction.id}>
-                <IonCol size="3">{transaction.category}</IonCol>
-                <IonCol size="3">{transaction.amount}</IonCol>
-                <IonCol size="3">{transaction.date}</IonCol>
-                <IonCol size="3">{transaction.notes}</IonCol>
-              </IonRow>
-            ))}
-          </IonGrid>
-        </IonContent>
+        <IonItem>
+          <IonLabel position="fixed">Category</IonLabel>
+          <IonLabel position="fixed">Date</IonLabel>
+          <IonLabel position="fixed">Amount</IonLabel>
+        </IonItem>
+        {transactions.map((transaction) => (
+          <IonItem>
+            <IonLabel position="fixed">{transaction.category}</IonLabel>
+            <IonLabel position="fixed">{transaction.date}</IonLabel>
+            <IonLabel
+              position="fixed"
+              color={transaction.isExpense ? `danger` : `success`}
+            >
+              {transaction.amount}
+            </IonLabel>
+          </IonItem>
+        ))}
       </IonContent>
     </IonPage>
   )

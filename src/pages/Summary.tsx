@@ -1,6 +1,14 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Summary.css';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonNote,
+} from "@ionic/react"
+import "./Summary.css"
 
 const Summary: React.FC = () => {
   return (
@@ -11,15 +19,15 @@ const Summary: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Summary</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer name="Summary" />
+        <IonItem>
+          <IonLabel>Primary Note</IonLabel>
+          <IonLabel slot="end" color="primary">
+            99
+          </IonLabel>
+        </IonItem>
       </IonContent>
     </IonPage>
-  );
-};
+  )
+}
 
-export default Summary;
+export default Summary

@@ -18,20 +18,16 @@ import {
 } from "@ionic/react"
 import { supabase } from "../supabaseClient"
 
-import "./Add.css"
+import "./AddTransaction.css"
 
-const Add: React.FC = () => {
-  const initialState = {
-    amount: "",
-    date: new Date().toISOString(),
-    isExpense: true,
-    category: "",
-    note: "",
-  }
-  const [transaction, setTransaction] = useState(initialState)
+const AddTransaction: React.FC = () => {
   const [showLoading, hideLoading] = useIonLoading()
   const [showToast] = useIonToast()
+  const [date, setDate] = useState(new Date().toISOString())
   const [categories, setCategories] = useState([])
+  const [category, setCategory] = useState("")
+  const [amount, setAmount] = useState("")
+  const [note, setNote] = useState("")
 
   useEffect(() => {
     getCategories()
@@ -67,15 +63,11 @@ const Add: React.FC = () => {
     await showLoading()
 
     try {
-      const { data, error } = await supabase.from("transactions").insert([
-        {
-          isExpense: transaction.isExpense,
-          category: transaction.category,
-          amount: transaction.amount,
-          date: transaction.date,
-          notes: transaction.note,
-        },
-      ])
+      const { data, error } = await supabase
+        .from("transactions")
+        .insert([
+          { category: category, amount: amount, date: date, notes: note },
+        ])
 
       if (error) {
         throw error
@@ -83,7 +75,7 @@ const Add: React.FC = () => {
 
       if (data) {
         console.log(data)
-        setTransaction(initialState)
+
         await hideLoading()
         showToast({ message: "Transaction Added", duration: 2000 })
       }
@@ -108,46 +100,24 @@ const Add: React.FC = () => {
                 type="text"
                 inputMode="decimal"
                 required={true}
-                value={transaction.amount}
+                value={amount}
                 autofocus={true}
-                onIonChange={(e) =>
-                  setTransaction({ ...transaction, amount: e.detail.value! })
-                }
+                onIonChange={(e) => setAmount(e.detail.value!)}
               ></IonInput>
-            </IonItem>
-
-            <IonItem>
-              <IonLabel position="fixed">Type</IonLabel>
-              <IonSelect
-                value={transaction.isExpense}
-                placeholder="Select One"
-                onIonChange={(e) =>
-                  setTransaction({ ...transaction, isExpense: e.detail.value! })
-                }
-              >
-                <IonSelectOption value={true}>Expense</IonSelectOption>
-                <IonSelectOption value={false}>Income</IonSelectOption>
-              </IonSelect>
             </IonItem>
 
             <IonItem>
               <IonLabel position="fixed">Category</IonLabel>
               <IonSelect
-                value={transaction.category}
+                value={category}
                 placeholder="Select One"
-                onIonChange={(e) =>
-                  setTransaction({ ...transaction, category: e.detail.value! })
-                }
+                onIonChange={(e) => setCategory(e.detail.value!)}
               >
-                {categories
-                  .filter(
-                    (category) => category.isExpense === transaction.isExpense,
-                  )
-                  .map((category) => (
-                    <IonSelectOption value={category.name} key={category.id}>
-                      {category.name}
-                    </IonSelectOption>
-                  ))}
+                {categories.map((category) => (
+                  <IonSelectOption value={category.name} key={category.id}>
+                    {category.name}
+                  </IonSelectOption>
+                ))}
               </IonSelect>
             </IonItem>
 
@@ -155,10 +125,8 @@ const Add: React.FC = () => {
               <IonLabel position="fixed">Date</IonLabel>
               <IonDatetime
                 presentation="date"
-                value={transaction.date}
-                onIonChange={(e) =>
-                  setTransaction({ ...transaction, date: e.detail.value! })
-                }
+                value={date}
+                onIonChange={(e) => setDate(e.detail.value!)}
               ></IonDatetime>
             </IonItem>
 
@@ -166,15 +134,13 @@ const Add: React.FC = () => {
               <IonLabel position="fixed">Notes</IonLabel>
               <IonInput
                 placeholder="notes"
-                value={transaction.note}
-                onIonChange={(e) =>
-                  setTransaction({ ...transaction, note: e.detail.value! })
-                }
+                value={note}
+                onIonChange={(e) => setNote(e.detail.value!)}
                 spellCheck={true}
               ></IonInput>
             </IonItem>
 
-            <IonButton type="submit" color="primary">
+            <IonButton type="submit" fill="clear">
               Submit
             </IonButton>
           </form>
@@ -184,4 +150,4 @@ const Add: React.FC = () => {
   )
 }
 
-export default Add
+export default AddTransaction

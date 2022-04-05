@@ -48,7 +48,7 @@ setupIonicReact()
 
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null)
-  
+
   useEffect(() => {
     setSession(supabase.auth.session())
     supabase.auth.onAuthStateChange((_event, session) => {
